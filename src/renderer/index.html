@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src track:; font-src 'self';">
+  <title>Simple Music Player</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/deck.css">
+  <link rel="stylesheet" href="css/equalizer.css">
+</head>
+<body>
+  <div id="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">SMP</span>
+        <span class="brand-name">Simple Music Player</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item is-active" data-view="library" data-key="library">
+          <span class="nav-icon">▤</span><span class="nav-label">Biblioteka</span>
+          <span class="nav-count" data-count="library"></span>
+        </button>
+        <button class="nav-item" data-view="favorites" data-key="favorites">
+          <span class="nav-icon">♥</span><span class="nav-label">Ulubione</span>
+          <span class="nav-count" data-count="favorites"></span>
+        </button>
+      </nav>
+
+      <div class="side-section">
+        <div class="side-head">
+          <span>Foldery</span>
+          <button id="btn-add-folder" class="mini" title="Dodaj folder z muzyką">+</button>
+        </div>
+        <ul id="folder-list" class="side-list"></ul>
+      </div>
+
+      <div class="side-section side-section--grow">
+        <div class="side-head">
+          <span>Playlisty</span>
+          <button id="btn-new-playlist" class="mini" title="Nowa playlista">+</button>
+        </div>
+        <ul id="playlist-list" class="side-list"></ul>
+      </div>
+
+      <div class="side-foot">
+        <button id="btn-add-files" class="ghost">Dodaj pliki</button>
+        <button id="btn-rescan" class="ghost" title="Przeskanuj foldery ponownie">Odśwież</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="toolbar">
+        <div class="toolbar-title">
+          <h1 id="view-title">Biblioteka</h1>
+          <p id="view-meta" class="muted"></p>
+        </div>
+        <div class="toolbar-actions">
+          <input id="search" type="search" class="search" placeholder="Szukaj tytułu lub wykonawcy…"
+                 autocomplete="off" spellcheck="false">
+          <button id="btn-play-all" class="primary">▶ Odtwórz</button>
+          <button id="btn-shuffle-all" class="ghost" title="Odtwarzaj w losowej kolejności">⤨ Losowo</button>
+          <button id="btn-rename-playlist" class="ghost" hidden>Zmień nazwę</button>
+          <button id="btn-delete-playlist" class="ghost danger" hidden>Usuń playlistę</button>
+        </div>
+      </header>
+
+      <div class="track-head">
+        <span class="col-fav"></span>
+        <span class="col-num">#</span>
+        <span class="col-title">Tytuł</span>
+        <span class="col-artist">Wykonawca</span>
+        <span class="col-album">Album</span>
+        <span class="col-time">Czas</span>
+        <span class="col-menu"></span>
+      </div>
+
+      <div id="track-list" class="track-list" tabindex="0"></div>
+
+      <div id="empty-state" class="empty" hidden>
+        <p class="empty-title">Nic tu jeszcze nie ma</p>
+        <p class="empty-hint">Dodaj folder z muzyką albo przeciągnij go na to okno.</p>
+        <button id="btn-empty-add" class="primary">Dodaj folder z muzyką</button>
+      </div>
+    </main>
+
+    <section class="deck">
+      <div class="deck-brand">
+        <span class="power-led" id="power-led"></span>
+        <span class="deck-model">STEREO SOUND SYSTEM · MODEL SMP-1990</span>
+        <span id="scan-status" class="scan-status"></span>
+      </div>
+
+      <div class="deck-top">
+        <div class="lcd">
+          <div class="lcd-line lcd-line--top">
+            <span class="lcd-state" id="lcd-state">STOP</span>
+            <span class="lcd-flags">
+              <span class="flag" id="flag-shuffle">SHUF</span>
+              <span class="flag" id="flag-repeat">RPT</span>
+              <span class="flag" id="flag-repeat-one">1</span>
+              <span class="flag" id="flag-eq">EQ</span>
+            </span>
+          </div>
+          <div class="lcd-marquee"><span id="lcd-title">— brak utworu —</span></div>
+          <div class="lcd-artist" id="lcd-artist"></div>
+          <div class="lcd-line lcd-line--bottom">
+            <span class="lcd-time" id="lcd-elapsed">0:00</span>
+            <span class="lcd-format" id="lcd-format">MP3</span>
+            <span class="lcd-time" id="lcd-total">0:00</span>
+          </div>
+        </div>
+
+        <div class="scope">
+          <canvas id="spectrum" class="spectrum" width="720" height="132"></canvas>
+          <div class="vu">
+            <div class="vu-row"><span class="vu-tag">L</span><canvas id="vu-left" width="600" height="12"></canvas></div>
+            <div class="vu-row"><span class="vu-tag">R</span><canvas id="vu-right" width="600" height="12"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-seek">
+        <input id="seek" class="seek" type="range" min="0" max="1000" step="1" value="0"
+               aria-label="Pozycja w utworze">
+      </div>
+
+      <div class="deck-controls">
+        <div class="transport">
+          <button id="btn-prev" class="hw" title="Poprzedni (Ctrl+←)">◀◀</button>
+          <button id="btn-play" class="hw hw-play" title="Odtwórz / pauza (spacja)">▶</button>
+          <button id="btn-stop" class="hw" title="Stop">■</button>
+          <button id="btn-next" class="hw" title="Następny (Ctrl+→)">▶▶</button>
+        </div>
+
+        <div class="modes">
+          <button id="btn-shuffle" class="hw hw-toggle" title="Kolejność losowa">SHUFFLE</button>
+          <button id="btn-repeat" class="hw hw-toggle" title="Powtarzanie: wyłączone / wszystko / jeden">REPEAT</button>
+          <button id="btn-fav" class="hw hw-fav" title="Dodaj do ulubionych">♥</button>
+        </div>
+
+        <div class="vol">
+          <button id="btn-mute" class="hw hw-small" title="Wycisz">◉</button>
+          <span class="vol-tag">VOLUME</span>
+          <input id="volume" class="vol-slider" type="range" min="0" max="100" step="1" value="80"
+                 aria-label="Głośność">
+          <span class="vol-value" id="vol-value">80</span>
+        </div>
+
+        <button id="btn-eq-toggle" class="hw hw-toggle hw-eq" title="Pokaż korektor">EQUALIZER</button>
+      </div>
+
+      <div class="eq-panel" id="eq-panel" hidden>
+        <div class="eq-head">
+          <span class="eq-title">GRAPHIC EQUALIZER · 10 BAND</span>
+          <label class="eq-preset-label" for="eq-preset">PRESET</label>
+          <select id="eq-preset" class="eq-preset"></select>
+          <button id="btn-eq-power" class="hw hw-toggle" title="Włącz lub wyłącz korektor">ON</button>
+          <button id="btn-eq-reset" class="hw hw-small" title="Wyzeruj wszystkie pasma">RESET</button>
+        </div>
+        <div class="eq-body">
+          <div class="eq-preamp">
+            <span class="eq-band-value" id="preamp-value">0</span>
+            <input id="preamp" class="eq-slider" type="range" min="-12" max="12" step="0.5" value="0"
+                   orient="vertical" aria-label="Wzmocnienie wstępne">
+            <span class="eq-band-freq">PRE</span>
+          </div>
+          <div class="eq-scale">
+            <span>+12</span><span>0</span><span>−12</span>
+          </div>
+          <div class="eq-bands" id="eq-bands"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="drop-overlay" class="drop-overlay" hidden>
+      <div class="drop-card">Upuść folder lub pliki, aby dodać je do biblioteki</div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

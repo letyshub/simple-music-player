@@ -1,0 +1,327 @@
+/* The deck: the part that is meant to look like the front panel of a 1990s
+   mini system. Brushed dark plastic, a green LCD, a segmented spectrum
+   analyser and chunky bevelled buttons with silkscreen labels. */
+
+.deck {
+  grid-area: deck;
+  position: relative;
+  padding: 10px 16px 13px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #23272d 0%, #191d22 22%, #14171b 100%);
+  border-top: 1px solid #333a42;
+  box-shadow: 0 -12px 26px rgba(0, 0, 0, 0.45);
+}
+
+/* Thin highlight along the very top edge, like light catching a moulded lip. */
+.deck::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14) 22%, rgba(255, 255, 255, 0.14) 78%, transparent);
+}
+
+/* ---------- Model plate ---------- */
+
+.deck-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-bottom: 8px;
+}
+
+.power-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1d4030;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.8);
+  transition: background 200ms, box-shadow 200ms;
+}
+.power-led.is-on {
+  background: var(--led-green);
+  box-shadow: 0 0 7px rgba(74, 222, 128, 0.85), inset 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.deck-model {
+  font: 9.5px/1 var(--mono);
+  letter-spacing: 0.16em;
+  color: #59626d;
+  text-transform: uppercase;
+}
+
+.scan-status {
+  margin-left: auto;
+  font: 10px/1 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--led-amber);
+}
+
+/* ---------- Display row ---------- */
+
+.deck-top {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* ---------- LCD ---------- */
+
+.lcd {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 11px;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #071a10, #04100a);
+  border: 1px solid #0a2a1a;
+  box-shadow:
+    inset 0 0 22px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(109, 255, 164, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--lcd-fg);
+  font-family: var(--mono);
+  overflow: hidden;
+}
+
+.lcd-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+}
+
+.lcd-state {
+  color: var(--lcd-fg);
+  text-shadow: 0 0 6px rgba(109, 255, 164, 0.5);
+}
+
+.lcd-flags { display: flex; gap: 6px; }
+
+.flag {
+  color: var(--lcd-dim);
+  transition: color 140ms, text-shadow 140ms;
+}
+.flag.is-on {
+  color: var(--lcd-fg);
+  text-shadow: 0 0 6px rgba(109, 255, 164, 0.6);
+}
+
+/* Title line. Long titles scroll the way a real display scrolled them. */
+.lcd-marquee {
+  position: relative;
+  overflow: hidden;
+  height: 21px;
+  margin-top: 1px;
+}
+
+#lcd-title {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  line-height: 21px;
+  text-shadow: 0 0 8px rgba(109, 255, 164, 0.45);
+}
+
+#lcd-title.is-scrolling {
+  animation: lcd-scroll var(--scroll-duration, 12s) linear infinite;
+}
+
+@keyframes lcd-scroll {
+  0%, 8% { transform: translateX(0); }
+  92%, 100% { transform: translateX(var(--scroll-distance, 0)); }
+}
+
+.lcd-artist {
+  height: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10.5px;
+  color: #3fae74;
+}
+
+.lcd-line--bottom { margin-top: 3px; }
+.lcd-time { font-size: 15px; letter-spacing: 0.04em; text-shadow: 0 0 7px rgba(109, 255, 164, 0.4); }
+.lcd-format { font-size: 9px; color: var(--lcd-dim); letter-spacing: 0.12em; }
+
+/* ---------- Spectrum analyser and VU meters ---------- */
+
+.scope {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px 9px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #0a0d10, #06080a);
+  border: 1px solid #1d232a;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  min-width: 0;
+}
+
+/* An explicit height keeps the panel compact. Left to itself the canvas
+   would take its height from the width via its intrinsic ratio, which makes
+   the display grow taller as the window widens. */
+.spectrum {
+  width: 100%;
+  height: 112px;
+  display: block;
+}
+
+.vu { display: flex; flex-direction: column; gap: 3px; }
+
+.vu-row { display: flex; align-items: center; gap: 6px; }
+
+.vu-tag {
+  width: 9px;
+  font: 8.5px/1 var(--mono);
+  color: #4d5761;
+  letter-spacing: 0.06em;
+}
+
+.vu-row canvas { flex: 1; height: 7px; display: block; }
+
+/* ---------- Seek bar ---------- */
+
+.deck-seek { padding: 9px 2px 7px; }
+
+.seek, .vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.seek::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, #4ade80 0 var(--progress, 0%), #1b2026 var(--progress, 0%) 100%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 0 0 1px #2a3038;
+}
+
+.seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 16px;
+  margin-top: -5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e6ebf1, #9aa4b0 48%, #6c7683);
+  border: 1px solid #464e58;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- Controls row ---------- */
+
+.deck-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.transport { display: flex; gap: 5px; }
+.modes { display: flex; gap: 5px; }
+
+/* Hardware-style button: bevelled, silkscreen label, LED when engaged. */
+.hw {
+  position: relative;
+  min-width: 42px;
+  padding: 7px 11px;
+  border: 1px solid #0d1013;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #2f353d 0%, #23282e 52%, #1a1e23 100%);
+  color: #b9c3cf;
+  font: 600 10.5px/1 var(--mono);
+  letter-spacing: 0.1em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hw:hover { background: linear-gradient(180deg, #383f48, #282e35 52%, #1e2329); color: #dbe3ec; border-color: #0d1013; }
+
+.hw:active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #1c2126, #232930);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hw-play { min-width: 58px; font-size: 13px; }
+
+.hw-small { min-width: 34px; padding: 6px 8px; }
+
+/* A toggle that is engaged glows amber, like a latched button on the panel. */
+.hw-toggle.is-on {
+  color: #1a1205;
+  background: linear-gradient(180deg, #fcc94f, #e0a020 55%, #b87c12);
+  border-color: #6d4b09;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 0 10px rgba(251, 191, 36, 0.35);
+}
+
+.hw-fav { font-size: 13px; min-width: 38px; }
+.hw-fav.is-on {
+  color: #fff0ef;
+  background: linear-gradient(180deg, #e5645a, #c23d33 55%, #9c2b22);
+  border-color: #6b1c16;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 0 10px rgba(248, 113, 113, 0.35);
+}
+
+.hw-eq { margin-left: auto; }
+
+/* ---------- Volume ---------- */
+
+.vol { display: flex; align-items: center; gap: 8px; }
+
+.vol-tag {
+  font: 9px/1 var(--mono);
+  letter-spacing: 0.14em;
+  color: #59626d;
+}
+
+.vol-slider { width: 118px; height: 14px; }
+
+.vol-slider::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #67e8f9 0 var(--progress, 80%), #1b2026 var(--progress, 80%) 100%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 0 0 1px #2a3038;
+}
+
+.vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 15px;
+  margin-top: -5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e6ebf1, #9aa4b0 48%, #6c7683);
+  border: 1px solid #464e58;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.vol-value {
+  width: 22px;
+  font: 10.5px/1 var(--mono);
+  color: #7c8794;
+  text-align: right;
+}
+
+@media (max-width: 1080px) {
+  .deck-top { grid-template-columns: 1fr; }
+  .spectrum { height: 92px; }
+  .hw-eq { margin-left: 0; }
+}

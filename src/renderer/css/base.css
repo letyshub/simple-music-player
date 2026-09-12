@@ -1,0 +1,186 @@
+/* Design tokens, reset and the small shared controls.
+   The palette is built around dark brushed plastic with LED-coloured accents,
+   so the deck at the bottom of the window reads as a piece of hardware. */
+
+:root {
+  --bg: #0e1012;
+  --panel: #16191d;
+  --panel-2: #1e2228;
+  --panel-3: #262b32;
+  --line: #2b313a;
+  --line-soft: #21262d;
+
+  --text: #d9dfe7;
+  --text-dim: #98a2ae;
+  --muted: #6f7986;
+
+  --led-green: #4ade80;
+  --led-amber: #fbbf24;
+  --led-red: #f87171;
+  --led-cyan: #67e8f9;
+
+  --lcd-bg: #05130c;
+  --lcd-fg: #6dffa4;
+  --lcd-dim: #1f7a4c;
+
+  --accent: #4ade80;
+  --danger: #f87171;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+
+  --mono: Consolas, "Lucida Console", "DejaVu Sans Mono", monospace;
+  --ui: "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --row-height: 34px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.45;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+audio { display: none; }
+
+/* Several components below set an explicit display, which would otherwise
+   beat the hidden attribute's default and leave them permanently on screen. */
+[hidden] { display: none !important; }
+
+h1, h2, h3, p { margin: 0; }
+
+.muted { color: var(--muted); }
+
+/* ---------- Scrollbars ---------- */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--panel-3);
+  border: 2px solid var(--bg);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: #384049; }
+
+/* ---------- Plain UI buttons (window chrome, not the deck) ---------- */
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+
+button:hover { background: var(--panel-3); border-color: #3a424c; }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.track-list:focus-visible {
+  outline: 2px solid var(--led-cyan);
+  outline-offset: 1px;
+}
+
+.primary {
+  background: linear-gradient(180deg, #2f9e5f, #248049);
+  border-color: #1c6b3c;
+  color: #eafff2;
+  font-weight: 600;
+}
+.primary:hover { background: linear-gradient(180deg, #37b46d, #298f52); border-color: #227a45; }
+
+.ghost { background: transparent; }
+.ghost:hover { background: var(--panel-2); }
+
+.danger:hover { color: #ffdad6; border-color: #7f2a24; background: #3a1a17; }
+
+.mini {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  font-size: 15px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+}
+.mini:hover { color: var(--text); background: var(--panel-3); }
+
+/* ---------- Text input ---------- */
+
+input[type="search"], input[type="text"], select {
+  font: inherit;
+  color: var(--text);
+  background: #0b0d10;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+}
+input[type="search"]::placeholder { color: var(--muted); }
+input[type="search"]::-webkit-search-cancel-button { filter: invert(0.6); cursor: pointer; }
+
+/* ---------- Drop overlay ---------- */
+
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(6, 10, 8, 0.82);
+  backdrop-filter: blur(2px);
+}
+
+.drop-card {
+  padding: 28px 44px;
+  border: 2px dashed var(--led-green);
+  border-radius: var(--radius-lg);
+  color: var(--led-green);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  background: rgba(10, 22, 15, 0.9);
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translateX(-50%);
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #10151a;
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  animation: toast-in 160ms ease-out;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
