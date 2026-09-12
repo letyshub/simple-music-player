@@ -35,17 +35,12 @@
   border-bottom: 1px solid var(--line-soft);
 }
 
+/* The mark carries its own plate and colours, so it only needs sizing here. */
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 5px;
-  background: linear-gradient(160deg, #2f9e5f, #17603a);
-  color: #eafff2;
-  font: 700 10px/1 var(--mono);
-  letter-spacing: 0.04em;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .brand-name { font-size: 12.5px; font-weight: 600; letter-spacing: 0.01em; }

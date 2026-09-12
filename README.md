@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="build/icon.png" width="104" alt="Logo: slupki poziomu dzwieku">
+</p>
+
 # Simple Music Player
 
 Odtwarzacz MP3 na Windows z playlistami, ulubionymi i dziesięciopasmowym
@@ -59,6 +63,13 @@ Sam katalog aplikacji, bez pakowania do instalatora:
 npm run pack
 ```
 
+Ikona aplikacji powstaje z pliku `src/renderer/assets/logo.svg` i odświeża się
+sama przy każdym budowaniu. Osobno:
+
+```bash
+npm run icon
+```
+
 ## Skróty klawiszowe
 
 | Skrót | Działanie |
@@ -109,7 +120,8 @@ src/
   renderer/   interfejs: graf Web Audio, korektor, analizator, widoki
   shared/     logika bez zależności od Electrona, pokryta testami
 tests/        testy jednostkowe i dymne
-tools/        skrypt generujący zrzuty ekranu do dokumentacji
+tools/        skrypty pomocnicze: zrzuty ekranu i ikona aplikacji
+build/        wygenerowana ikona dla instalatora
 ```
 
 Okno nie ma dostępu do systemu plików. Pliki audio docierają do niego

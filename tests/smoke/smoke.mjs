@@ -81,6 +81,15 @@ check('empty library shows the add-music prompt', emptyState.promptShown);
 check('empty library hides the track list', emptyState.listHidden);
 check('drop overlay stays out of the way', emptyState.overlayHidden);
 
+// The logo is loaded as a file rather than inlined, so a content security
+// policy mistake would hide it without any error in the console.
+const logoLoaded = await page.evaluate(() => {
+  const img = document.querySelector('.brand-mark');
+  return { complete: img?.complete === true, width: img?.naturalWidth ?? 0 };
+});
+check('logo image loads', logoLoaded.complete && logoLoaded.width > 0,
+  `naturalWidth=${logoLoaded.width}`);
+
 await page.screenshot({ path: path.join(shotDir, '00-pierwsze-uruchomienie.png') });
 
 /* ------------------------------------------------------------- 1. import */

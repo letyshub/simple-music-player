@@ -8,10 +8,11 @@
     "start": "electron .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dist": "electron-builder --win",
-    "pack": "electron-builder --win --dir",
+    "dist": "npm run icon && electron-builder --win",
+    "pack": "npm run icon && electron-builder --win --dir",
     "test:smoke": "node tests/smoke/smoke.mjs",
-    "test:packaged": "node tests/smoke/packaged.mjs"
+    "test:packaged": "node tests/smoke/packaged.mjs",
+    "icon": "node tools/make-icon.mjs"
   },
   "author": "",
   "license": "MIT",
@@ -22,6 +23,8 @@
     "electron": "^38.8.6",
     "electron-builder": "^25.1.8",
     "playwright-core": "^1.63.0",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4",
     "vitest": "^2.1.8"
   },
   "build": {
@@ -45,7 +48,8 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,

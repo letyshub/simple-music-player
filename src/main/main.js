@@ -20,6 +20,9 @@ function createWindow() {
     minHeight: 700,
     backgroundColor: '#0e1012',
     title: 'Simple Music Player',
+    // Packaged builds take the icon from the executable; this is what
+    // makes the window look right when running from source.
+    icon: path.join(here, '..', 'renderer', 'assets', 'icon-256.png'),
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
