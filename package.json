@@ -1,0 +1,40 @@
+{
+  "name": "simple-music-player",
+  "version": "1.0.0",
+  "description": "Prosty odtwarzacz MP3 w stylu wiezy hi-fi z lat 90.",
+  "type": "module",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist": "electron-builder --win",
+    "pack": "electron-builder --win --dir"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "music-metadata": "^10.6.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "pl.local.simplemusicplayer",
+    "productName": "Simple Music Player",
+    "files": ["src/**/*", "package.json"],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Simple Music Player"
+    }
+  }
+}
