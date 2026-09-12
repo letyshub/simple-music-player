@@ -1,0 +1,21 @@
+name: testy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Only the unit tests run here. The smoke test needs to open a real
+      # window and play audio, which is worth doing on a desktop rather
+      # than fighting a headless runner for.
+      - run: npm test

@@ -3,7 +3,7 @@
 Odtwarzacz MP3 na Windows z playlistami, ulubionymi i dziesięciopasmowym
 korektorem graficznym stylizowanym na wieżę hi-fi z lat 90.
 
-![Widok główny z otwartym korektorem](docs/screenshot.png)
+![Widok główny z otwartym korektorem](docs/screenshots/04-korektor.png)
 
 ## Co potrafi
 
@@ -21,6 +21,19 @@ korektorem graficznym stylizowanym na wieżę hi-fi z lat 90.
 
 Biblioteka, playlisty, ulubione i ustawienia korektora zapisują się
 automatycznie i wracają po ponownym uruchomieniu.
+
+## Zrzuty ekranu
+
+| | |
+|---|---|
+| ![Pierwsze uruchomienie](docs/screenshots/01-pierwsze-uruchomienie.png) | ![Biblioteka](docs/screenshots/02-biblioteka.png) |
+| Pierwsze uruchomienie | Biblioteka |
+| ![Odtwarzanie](docs/screenshots/03-odtwarzanie.png) | ![Playlista](docs/screenshots/05-playlista.png) |
+| Odtwarzanie z analizatorem widma | Playlista |
+| ![Korektor](docs/screenshots/04-korektor.png) | ![Ulubione](docs/screenshots/06-ulubione.png) |
+| Korektor graficzny | Ulubione |
+
+Na zrzutach widać wygenerowane pliki demonstracyjne, nie prawdziwe nagrania.
 
 ## Uruchomienie
 
@@ -74,7 +87,14 @@ jednostkowych — między innymi to, czy analizator widma faktycznie dostaje
 próbki dźwięku:
 
 ```bash
-npm run test:smoke -- "C:\ścieżka\do\folderu\z\mp3" "C:\gdzie\zapisać\zrzuty"
+npm run test:smoke -- "C:\sciezka\do\folderu\z\mp3" "C:\gdzie\zapisac\zrzuty"
+```
+
+Zrzuty ekranu do tego pliku powstają skryptem, więc po zmianie wyglądu można
+je odświeżyć jedną komendą zamiast robić je ręcznie:
+
+```bash
+node tools/screenshots.mjs "C:\sciezka\do\folderu\z\mp3"
 ```
 
 ## Jak to jest zbudowane
@@ -88,6 +108,8 @@ src/
               strumieniowanie plików audio do okna
   renderer/   interfejs: graf Web Audio, korektor, analizator, widoki
   shared/     logika bez zależności od Electrona, pokryta testami
+tests/        testy jednostkowe i dymne
+tools/        skrypt generujący zrzuty ekranu do dokumentacji
 ```
 
 Okno nie ma dostępu do systemu plików. Pliki audio docierają do niego
@@ -95,3 +117,7 @@ przez własny protokół `track://`, który obsługuje żądania zakresowe, wię
 przewijanie działa bez wczytywania całego utworu.
 
 Szczegóły projektowe: [docs/superpowers/specs/](docs/superpowers/specs/).
+
+## Licencja
+
+MIT. Zobacz [LICENSE](LICENSE).
