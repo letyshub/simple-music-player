@@ -4,6 +4,10 @@
 
 # Simple Music Player
 
+[![testy](https://github.com/letyshub/simple-music-player/actions/workflows/tests.yml/badge.svg)](https://github.com/letyshub/simple-music-player/actions/workflows/tests.yml)
+[![najnowsze wydanie](https://img.shields.io/github/v/release/letyshub/simple-music-player?label=wydanie)](https://github.com/letyshub/simple-music-player/releases/latest)
+[![licencja](https://img.shields.io/badge/licencja-MIT-blue)](LICENSE)
+
 Odtwarzacz MP3 na Windows z playlistami, ulubionymi i dziesięciopasmowym
 korektorem graficznym stylizowanym na wieżę hi-fi z lat 90.
 
@@ -39,7 +43,20 @@ automatycznie i wracają po ponownym uruchomieniu.
 
 Na zrzutach widać wygenerowane pliki demonstracyjne, nie prawdziwe nagrania.
 
-## Uruchomienie
+## Pobieranie
+
+Gotowe pliki są na [stronie wydań](https://github.com/letyshub/simple-music-player/releases/latest):
+
+- **instalator** — zwykła instalacja ze skrótem w menu Start,
+- **wersja przenośna** — jeden plik, działa bez instalacji, choćby z pendrive'a.
+
+Pliki nie są podpisane cyfrowo, więc przy pierwszym uruchomieniu Windows
+SmartScreen pokaże ostrzeżenie „Nie chroniono komputera". To normalne dla
+programów bez płatnego certyfikatu. Kliknij **Więcej informacji**, a potem
+**Uruchom mimo to**. Jeśli wolisz nie ufać cudzemu plikowi wykonywalnemu,
+zbuduj aplikację ze źródeł — instrukcja niżej.
+
+## Uruchomienie ze źródeł
 
 Potrzebujesz Node.js 20 lub nowszego.
 
@@ -69,6 +86,26 @@ sama przy każdym budowaniu. Osobno:
 ```bash
 npm run icon
 ```
+
+## Wydawanie nowej wersji
+
+Wydania robi pipeline, nie człowiek z własnego komputera. Podnieś wersję
+w `package.json`, zatwierdź zmianę i załóż tag o tej samej wersji:
+
+```bash
+npm version 1.1.0
+git push origin main --follow-tags
+```
+
+Tag zaczynający się od `v` uruchamia budowanie na Windows: testy jednostkowe,
+instalator i wersja przenośna, a na końcu **szkic** wydania z podpiętymi
+plikami. Szkic, a nie od razu opublikowane wydanie — pobierz pliki, sprawdź,
+czy program się uruchamia, dopisz opis zmian i dopiero wtedy kliknij
+„Publish release".
+
+Pipeline przerwie pracę, jeśli tag nie zgadza się z wersją w `package.json`.
+Bez tej kontroli wydanie `v1.1.0` mogłoby zawierać pliki nazwane `1.0.0`
+i nikt by tego nie zauważył aż do zgłoszenia od użytkownika.
 
 ## Skróty klawiszowe
 
