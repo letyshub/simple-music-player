@@ -8,13 +8,14 @@
     "start": "electron .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dist": "npm run icon && electron-builder --win",
+    "dist": "npm run icon && electron-builder --win --publish never",
     "pack": "npm run icon && electron-builder --win --dir",
     "test:smoke": "node tests/smoke/smoke.mjs",
     "test:packaged": "node tests/smoke/packaged.mjs",
-    "icon": "node tools/make-icon.mjs"
+    "icon": "node tools/make-icon.mjs",
+    "release": "npm run icon && electron-builder --win --publish always"
   },
-  "author": "",
+  "author": "letyshub",
   "license": "MIT",
   "dependencies": {
     "music-metadata": "^10.6.0"
@@ -54,7 +55,28 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "shortcutName": "Simple Music Player"
+      "shortcutName": "Simple Music Player",
+      "artifactName": "SimpleMusicPlayer-${version}-setup.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "draft"
+      }
+    ],
+    "portable": {
+      "artifactName": "SimpleMusicPlayer-${version}-portable.${ext}"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/letyshub/simple-music-player.git"
+  },
+  "homepage": "https://github.com/letyshub/simple-music-player",
+  "bugs": {
+    "url": "https://github.com/letyshub/simple-music-player/issues"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
