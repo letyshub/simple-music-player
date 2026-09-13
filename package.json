@@ -66,6 +66,9 @@
     ],
     "portable": {
       "artifactName": "SimpleMusicPlayer-${version}-portable.${ext}"
+    },
+    "releaseInfo": {
+      "releaseNotesFile": "build/release-notes.md"
     }
   },
   "repository": {

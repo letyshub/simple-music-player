@@ -56,6 +56,17 @@ jobs:
           fi
           echo "Tag i wersja zgodne: $pkg"
 
+      # Opis wydania powstaje z CHANGELOG.md. Krok kończy się błędem, gdy
+      # dla wydawanej wersji nikt nie napisał opisu — lepiej przerwać teraz
+      # niż opublikować instalator z pustą stroną wydania.
+      - name: Przygotuj opis wydania z CHANGELOG.md
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          node tools/release-notes.mjs "$version" build/release-notes.md
+          echo "--- opis wydania $version ---"
+          cat build/release-notes.md
+
       # Testy jednostkowe są bramką. Test dymny zostaje poza pipeline'em,
       # bo potrzebuje karty dźwiękowej, a bramka, która czasem zapala się
       # na czerwono bez powodu, szybko przestaje cokolwiek znaczyć.

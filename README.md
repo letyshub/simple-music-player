@@ -5,7 +5,7 @@
 # Simple Music Player
 
 [![testy](https://github.com/letyshub/simple-music-player/actions/workflows/tests.yml/badge.svg)](https://github.com/letyshub/simple-music-player/actions/workflows/tests.yml)
-[![najnowsze wydanie](https://img.shields.io/github/v/release/letyshub/simple-music-player?label=wydanie)](https://github.com/letyshub/simple-music-player/releases/latest)
+[![pobierz](https://img.shields.io/badge/pobierz-Windows-2f9e5f)](https://github.com/letyshub/simple-music-player/releases/latest)
 [![licencja](https://img.shields.io/badge/licencja-MIT-blue)](LICENSE)
 
 Odtwarzacz MP3 na Windows z playlistami, ulubionymi i dziesięciopasmowym
@@ -89,8 +89,10 @@ npm run icon
 
 ## Wydawanie nowej wersji
 
-Wydania robi pipeline, nie człowiek z własnego komputera. Podnieś wersję
-w `package.json`, zatwierdź zmianę i załóż tag o tej samej wersji:
+Wydania robi pipeline, nie człowiek z własnego komputera. Najpierw opisz
+zmiany w [CHANGELOG.md](CHANGELOG.md) pod nagłówkiem nowej wersji — ta treść
+stanie się opisem wydania na GitHubie, więc pisz ją dla kogoś, kto zastanawia
+się, czy warto pobrać aktualizację. Potem podnieś wersję i załóż tag:
 
 ```bash
 npm version 1.1.0
@@ -99,13 +101,16 @@ git push origin main --follow-tags
 
 Tag zaczynający się od `v` uruchamia budowanie na Windows: testy jednostkowe,
 instalator i wersja przenośna, a na końcu **szkic** wydania z podpiętymi
-plikami. Szkic, a nie od razu opublikowane wydanie — pobierz pliki, sprawdź,
-czy program się uruchamia, dopisz opis zmian i dopiero wtedy kliknij
-„Publish release".
+plikami, a opisem wydania staje się sekcja z dziennika zmian. Szkic, a nie od
+razu opublikowane wydanie — pobierz pliki, sprawdź, czy program się uruchamia,
+i dopiero wtedy kliknij „Publish release".
 
-Pipeline przerwie pracę, jeśli tag nie zgadza się z wersją w `package.json`.
-Bez tej kontroli wydanie `v1.1.0` mogłoby zawierać pliki nazwane `1.0.0`
-i nikt by tego nie zauważył aż do zgłoszenia od użytkownika.
+Pipeline przerwie pracę w dwóch przypadkach: gdy tag nie zgadza się z wersją
+w `package.json` oraz gdy dla wydawanej wersji nie ma opisu w `CHANGELOG.md`.
+Pierwsze chroni przed wydaniem `v1.1.0` z plikami nazwanymi `1.0.0`, drugie
+przed instalatorem, którego strona wydania nie mówi ani słowa o zmianach.
+Oba błędy wychodzą zwykle dopiero w zgłoszeniu od użytkownika, więc taniej
+jest przerwać budowanie.
 
 ## Skróty klawiszowe
 
