@@ -1,14 +1,14 @@
 import { app, BrowserWindow, Menu, shell } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { registerTrackScheme, installTrackProtocol } from './protocol.js';
+import { registerAppScheme, installAppProtocol, appUrl } from './protocol.js';
 import { registerIpcHandlers } from './ipc.js';
 import { loadStore, flushStoreNow } from './store.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 // Privileged schemes have to be declared before the app finishes starting.
-registerTrackScheme();
+registerAppScheme();
 
 let mainWindow = null;
 
@@ -53,7 +53,9 @@ function createWindow() {
 
   mainWindow.on('closed', () => { mainWindow = null; });
 
-  void mainWindow.loadFile(path.join(here, '..', 'renderer', 'index.html'));
+  // Loaded over the app scheme rather than from a file, so that the page
+  // and the audio it plays share one origin. See protocol.js.
+  void mainWindow.loadURL(appUrl('index.html'));
 }
 
 // A second copy would fight the first one over the library file.
@@ -69,7 +71,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(async () => {
     Menu.setApplicationMenu(null);
     await loadStore();
-    installTrackProtocol();
+    installAppProtocol();
     registerIpcHandlers();
     createWindow();
 

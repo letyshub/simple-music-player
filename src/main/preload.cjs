@@ -37,8 +37,10 @@ contextBridge.exposeInMainWorld('api', {
     return () => ipcRenderer.off('library:progress', handler);
   },
 
-  /** Playable URL for a file. Must match the scheme registered in protocol.js. */
-  trackUrl: (filePath) => `track://file/${encodeURIComponent(filePath)}`,
+  /** Playable URL for a file. Shares an origin with the page itself, which is
+   *  what keeps the Web Audio graph from treating it as foreign and muting
+   *  the analyser. Must match the scheme registered in protocol.js. */
+  trackUrl: (filePath) => `app://smp/track/${encodeURIComponent(filePath)}`,
 
   /** Real path of a dropped File, which the renderer cannot read on its own. */
   pathForFile: (file) => {

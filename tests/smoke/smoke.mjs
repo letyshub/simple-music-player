@@ -129,10 +129,19 @@ const playback = await page.evaluate(() => {
   };
 });
 
-check('audio streams over the track protocol', playback.src.startsWith('track://'), playback.src.slice(0, 42));
+check('audio streams over the app protocol, same origin as the page',
+  playback.src.startsWith('app://smp/track/'), playback.src.slice(0, 46));
 check('no media error', playback.error === null, String(playback.error));
 check('playback is running', !playback.paused && playback.currentTime > 0.3,
   `t=${playback.currentTime.toFixed(2)}s`);
+
+// The page and its audio must share an origin. When they do not, Chromium
+// refuses the request outright on a custom scheme and the analyser goes dark.
+const sameOrigin = await page.evaluate(() => {
+  const audio = document.querySelector('#audio');
+  return new URL(audio.src).origin === window.location.origin;
+});
+check('audio shares an origin with the page', sameOrigin);
 
 const lcdState = await page.locator('#lcd-state').textContent();
 check('display shows PLAY', lcdState.trim() === 'PLAY', lcdState);

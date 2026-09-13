@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src track:; font-src 'self';">
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self';">
   <title>Simple Music Player</title>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
@@ -183,7 +183,7 @@
     <div id="toast" class="toast" hidden></div>
   </div>
 
-  <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
+  <audio id="audio" preload="auto"></audio>
 
   <script type="module" src="js/app.js"></script>
 </body>

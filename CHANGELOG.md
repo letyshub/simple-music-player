@@ -9,7 +9,17 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 
 ## [Nieopublikowane]
 
-Nic jeszcze nie czeka na wydanie.
+### Poprawione
+
+- Odtwarzanie przestało działać po aktualizacji Electrona do wersji 39.
+  Nowszy silnik przeglądarki nie zezwala już na żądania między pochodzeniami
+  dla własnych schematów, przez co plik dźwiękowy nie był w ogóle wczytywany.
+  Okno i dźwięk mają teraz wspólne pochodzenie, więc problem znika u źródła.
+
+### Bezpieczeństwo
+
+- Uaktualniono `music-metadata`, co usuwa zawieszanie się skanowania folderu
+  na uszkodzonym pliku ASF (`.wma`).
 
 ## [1.1.0] - 2026-09-13
 
