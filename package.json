@@ -17,15 +17,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "music-metadata": "^10.6.0"
+    "music-metadata": "^11.12.3"
   },
   "devDependencies": {
-    "electron": "^38.8.6",
-    "electron-builder": "^25.1.8",
+    "electron": "^39.8.10",
+    "electron-builder": "^26.15.3",
     "playwright-core": "^1.63.0",
     "png-to-ico": "^3.0.2",
     "sharp": "^0.35.4",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.11"
   },
   "build": {
     "appId": "pl.local.simplemusicplayer",
