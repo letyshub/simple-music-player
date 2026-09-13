@@ -1,6 +1,6 @@
 {
   "name": "simple-music-player",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Prosty odtwarzacz MP3 w stylu wiezy hi-fi z lat 90.",
   "type": "module",
   "main": "src/main/main.js",
