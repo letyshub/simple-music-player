@@ -72,6 +72,25 @@ jobs:
       # na czerwono bez powodu, szybko przestaje cokolwiek znaczyć.
       - run: npm test
 
+      # Szkic musi istnieć, zanim electron-builder zacznie wysyłać pliki.
+      # Wysyła je równolegle, a każde wysyłanie, które nie znajdzie wydania
+      # dla tego tagu, zakłada własne — przy pustym starcie kończyło się to
+      # dwoma szkicami z tym samym tagiem i plikami podzielonymi między nie.
+      - name: Załóż szkic wydania, zanim ruszy wysyłka
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Szkiców nie widać przez wyszukiwanie po tagu, więc pytamy o listę.
+          istnieje=$(gh api "repos/$GITHUB_REPOSITORY/releases"             --jq "[.[] | select(.tag_name == \"$GITHUB_REF_NAME\")] | length")
+          if [ "$istnieje" -eq 0 ]; then
+            gh release create "$GITHUB_REF_NAME"               --draft               --title "$GITHUB_REF_NAME"               --notes-file build/release-notes.md
+            echo "Zalozono szkic $GITHUB_REF_NAME."
+          else
+            echo "Szkic $GITHUB_REF_NAME juz istnieje ($istnieje), wysylam do niego."
+          fi
+
       - name: Zbuduj i wyślij do szkicu wydania
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm run release
