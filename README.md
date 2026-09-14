@@ -89,15 +89,24 @@ npm run icon
 
 ## Wydawanie nowej wersji
 
-Wydania robi pipeline, nie człowiek z własnego komputera. Najpierw opisz
-zmiany w [CHANGELOG.md](CHANGELOG.md) pod nagłówkiem nowej wersji — ta treść
-stanie się opisem wydania na GitHubie, więc pisz ją dla kogoś, kto zastanawia
-się, czy warto pobrać aktualizację. Potem podnieś wersję i załóż tag:
+Wydania robi pipeline, nie człowiek z własnego komputera.
+
+Najpierw opisz zmiany w [CHANGELOG.md](CHANGELOG.md) pod nagłówkiem nowej
+wersji — ta treść stanie się opisem wydania na GitHubie, więc pisz ją dla
+kogoś, kto zastanawia się, czy warto pobrać aktualizację. Dopiero potem
+podnieś wersję i wypchnij tag:
 
 ```bash
-npm version 1.1.0
+npm version 1.2.0
 git push origin main --follow-tags
 ```
+
+Kolejność ma znaczenie i `npm version` sam jej pilnuje: jeśli w dzienniku nie
+ma sekcji dla nowego numeru, odmówi i nie założy ani commita, ani tagu.
+Zostanie tylko podbity `package.json`, który cofniesz przez
+`git checkout package.json package-lock.json`. Gdyby ta kontrola działała
+dopiero w pipelinie, tag wskazywałby już commit bez opisu i trzeba by go
+kasować ze zdalnego repozytorium.
 
 Tag zaczynający się od `v` uruchamia budowanie na Windows: testy jednostkowe,
 instalator i wersja przenośna, a na końcu **szkic** wydania z podpiętymi
@@ -105,12 +114,11 @@ plikami, a opisem wydania staje się sekcja z dziennika zmian. Szkic, a nie od
 razu opublikowane wydanie — pobierz pliki, sprawdź, czy program się uruchamia,
 i dopiero wtedy kliknij „Publish release".
 
-Pipeline przerwie pracę w dwóch przypadkach: gdy tag nie zgadza się z wersją
-w `package.json` oraz gdy dla wydawanej wersji nie ma opisu w `CHANGELOG.md`.
-Pierwsze chroni przed wydaniem `v1.1.0` z plikami nazwanymi `1.0.0`, drugie
-przed instalatorem, którego strona wydania nie mówi ani słowa o zmianach.
-Oba błędy wychodzą zwykle dopiero w zgłoszeniu od użytkownika, więc taniej
-jest przerwać budowanie.
+Pipeline powtarza obie kontrole u siebie, bo tag może powstać także z ręki:
+przerwie pracę, gdy nie zgadza się z wersją w `package.json` albo gdy dla
+wydawanej wersji nie ma opisu w dzienniku. Pierwsze chroni przed wydaniem
+`v1.2.0` z plikami nazwanymi `1.1.0`, drugie przed instalatorem, którego
+strona wydania nie mówi ani słowa o zmianach.
 
 ## Skróty klawiszowe
 
@@ -166,9 +174,12 @@ tools/        skrypty pomocnicze: zrzuty ekranu i ikona aplikacji
 build/        wygenerowana ikona dla instalatora
 ```
 
-Okno nie ma dostępu do systemu plików. Pliki audio docierają do niego
-przez własny protokół `track://`, który obsługuje żądania zakresowe, więc
-przewijanie działa bez wczytywania całego utworu.
+Okno nie ma dostępu do systemu plików. Zarówno interfejs, jak i pliki audio
+docierają do niego przez własny protokół `app://`, który obsługuje żądania
+zakresowe, więc przewijanie działa bez wczytywania całego utworu. Wspólny
+protokół to nie przypadek: dzięki niemu strona i dźwięk mają to samo
+pochodzenie, a graf Web Audio nie traktuje utworu jako obcego zasobu, co
+wyciszyłoby analizator widma.
 
 Szczegóły projektowe: [docs/superpowers/specs/](docs/superpowers/specs/).
 

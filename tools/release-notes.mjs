@@ -71,14 +71,18 @@ const invokedDirectly = process.argv[1]
   && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
 
 if (invokedDirectly) {
-  const [version, outFile] = process.argv.slice(2);
+  const [versionArg, outFile] = process.argv.slice(2);
+  const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+  // Bez argumentu bierzemy wersje z package.json. Dzieki temu ten sam skrypt
+  // sluzy za hak `npm version`, ktory odpala sie juz po podbiciu numeru,
+  // a przed zalozeniem commita i tagu.
+  let version = versionArg;
   if (!version) {
-    console.error('Uzycie: node tools/release-notes.mjs <wersja> [plik-wyjsciowy]');
-    process.exit(2);
+    const pkg = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
+    version = pkg.version;
   }
 
-  const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const changelogPath = path.join(projectRoot, 'CHANGELOG.md');
 
   let changelog;
@@ -95,7 +99,9 @@ if (invokedDirectly) {
     const known = listVersions(changelog);
     console.error(
       `Brak opisu zmian dla wersji ${normalizeVersion(version)} w CHANGELOG.md.`
-      + (known.length ? ` Opisane wersje: ${known.join(', ')}.` : ''),
+      + (known.length ? ` Opisane wersje: ${known.join(', ')}.` : '')
+      + `
+Dodaj sekcje "## [${normalizeVersion(version)}] - RRRR-MM-DD" i sprobuj ponownie.`,
     );
     process.exit(1);
   }

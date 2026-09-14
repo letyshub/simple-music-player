@@ -13,7 +13,8 @@
     "test:smoke": "node tests/smoke/smoke.mjs",
     "test:packaged": "node tests/smoke/packaged.mjs",
     "icon": "node tools/make-icon.mjs",
-    "release": "npm run icon && electron-builder --win --publish always"
+    "release": "npm run icon && electron-builder --win --publish always",
+    "version": "node tools/release-notes.mjs"
   },
   "author": "letyshub",
   "license": "MIT",
