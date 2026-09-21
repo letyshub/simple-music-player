@@ -30,6 +30,19 @@ contextBridge.exposeInMainWorld('api', {
   rescan: () => ipcRenderer.invoke('library:rescan'),
   reveal: (filePath) => ipcRenderer.invoke('shell:reveal', filePath),
 
+  // Copying onto a device. `planExport` opens the folder picker unless a
+  // target is already known, and returns null when the user backs out.
+  planExport: (request) => ipcRenderer.invoke('export:plan', request),
+  runExport: (request) => ipcRenderer.invoke('export:run', request),
+  cancelExport: () => ipcRenderer.invoke('export:cancel'),
+
+  /** Subscribe to export progress. Returns an unsubscribe function. */
+  onExportProgress: (callback) => {
+    const handler = (_event, payload) => callback(payload);
+    ipcRenderer.on('export:progress', handler);
+    return () => ipcRenderer.off('export:progress', handler);
+  },
+
   /** Subscribe to scan progress. Returns an unsubscribe function. */
   onProgress: (callback) => {
     const handler = (_event, payload) => callback(payload);

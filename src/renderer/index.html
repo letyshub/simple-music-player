@@ -180,6 +180,60 @@
       <div class="drop-card">Upuść folder lub pliki, aby dodać je do biblioteki</div>
     </div>
 
+    <div id="export-modal" class="modal" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="export-heading">
+        <div class="modal-head">
+          <h2 id="export-heading">Eksport na urządzenie</h2>
+          <button id="btn-export-close" class="mini" type="button" title="Zamknij">×</button>
+        </div>
+
+        <section class="modal-body" id="export-step-preview">
+          <dl class="export-facts">
+            <dt>Źródło</dt>
+            <dd id="export-source"></dd>
+            <dt>Cel</dt>
+            <dd class="export-target">
+              <span id="export-target"></span>
+              <button id="btn-export-change" class="ghost" type="button">Zmień…</button>
+            </dd>
+          </dl>
+
+          <ul class="export-sums">
+            <li><span>Do skopiowania</span><b id="export-size"></b></li>
+            <li><span>Wolne na urządzeniu</span><b id="export-free"></b></li>
+            <li id="export-rest-row"><span>Zostanie</span><b id="export-rest"></b></li>
+          </ul>
+
+          <p class="export-warning" id="export-warning" hidden></p>
+
+          <p class="export-note">Pliki dostaną numery zachowujące kolejność listy:</p>
+          <ul class="export-sample" id="export-sample"></ul>
+          <p class="export-note">Pliki, które już tam są, zostaną pominięte.</p>
+        </section>
+
+        <section class="modal-body" id="export-step-progress" hidden>
+          <p class="export-note" id="export-progress-target"></p>
+          <div class="export-bar"><div class="export-bar-fill" id="export-bar"></div></div>
+          <p class="export-counter" id="export-counter"></p>
+          <p class="export-current" id="export-current"></p>
+        </section>
+
+        <section class="modal-body" id="export-step-summary" hidden>
+          <p class="export-note" id="export-summary-target"></p>
+          <ul class="export-tally" id="export-tally"></ul>
+          <ul class="export-errors" id="export-errors" hidden></ul>
+        </section>
+
+        <div class="modal-foot">
+          <button id="btn-export-cancel" class="ghost" type="button">Anuluj</button>
+          <button id="btn-export-stop" class="ghost danger" type="button" hidden>Przerwij</button>
+          <button id="btn-export-reveal" class="ghost" type="button" hidden>Pokaż folder</button>
+          <button id="btn-export-start" class="primary" type="button">▸ Kopiuj</button>
+          <button id="btn-export-done" class="primary" type="button" hidden>Zamknij</button>
+        </div>
+      </div>
+    </div>
+
     <div id="toast" class="toast" hidden></div>
   </div>
 

@@ -11,6 +11,7 @@ import { createTrackList } from './views/tracklist.js';
 import { createSidebar } from './views/sidebar.js';
 import { createDeck } from './views/deck.js';
 import { createEqPanel } from './views/eq-panel.js';
+import { createExportDialog } from './views/export-dialog.js';
 
 /** Start-up and the wiring that does not belong to any single view. */
 
@@ -147,11 +148,13 @@ async function main() {
     player,
   });
 
-  const trackList = createTrackList({ playback });
+  const exportDialog = createExportDialog();
+  const trackList = createTrackList({ playback, exportDialog });
   const deck = createDeck({ player, playback, visualizer });
   const eqPanel = createEqPanel({ equalizer, onFlagsChanged: () => deck.updateModeButtons() });
   const sidebar = createSidebar({
     playback,
+    exportDialog,
     onScanStart: showScanStatus,
     onScanEnd: () => showScanStatus(''),
   });

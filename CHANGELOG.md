@@ -9,7 +9,16 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 
 ## [Nieopublikowane]
 
-Nic jeszcze nie czeka na wydanie.
+### Dodane
+
+- **Eksport na pendrive i odtwarzacze MP3.** Playlistę, ulubione albo
+  zaznaczone utwory można skopiować na urządzenie: prawy przycisk myszy na
+  liście, „Eksportuj na urządzenie…", wskazanie folderu. Pliki dostają numery
+  zachowujące kolejność listy (`01 - Wykonawca - Tytuł.mp3`), więc radia
+  samochodowe i odtwarzacze sortujące alfabetycznie grają je we właściwej
+  kolejności. Przed startem widać rozmiar eksportu i wolne miejsce, a przy
+  ponownym eksporcie kopiowane są tylko brakujące pliki. Nic na urządzeniu
+  nie jest usuwane.
 
 ## [1.1.1] - 2026-09-14
 

@@ -10,7 +10,7 @@ import { TRACK_DRAG_TYPE } from './tracklist.js';
 /** Folders, playlists and the two fixed views. Also a drop target: dragging
  *  tracks onto a playlist adds them to it. */
 
-export function createSidebar({ playback, onScanStart, onScanEnd }) {
+export function createSidebar({ playback, exportDialog, onScanStart, onScanEnd }) {
   const folderList = $('#folder-list');
   const playlistList = $('#playlist-list');
 
@@ -115,6 +115,14 @@ export function createSidebar({ playback, onScanStart, onScanEnd }) {
               label: 'Odtwórz playlistę',
               action: () => playback.playList(playlist.trackIds),
             },
+            {
+              label: 'Eksportuj na urządzenie…',
+              action: () => exportDialog.open({
+                trackIds: playlist.trackIds,
+                folderName: playlist.name,
+                sourceLabel: `Playlista „${playlist.name}”`,
+              }),
+            },
             'separator',
             { label: 'Usuń playlistę', danger: true, action: () => deletePlaylist(playlist.id) },
           ]);
@@ -164,6 +172,25 @@ export function createSidebar({ playback, onScanStart, onScanEnd }) {
   for (const button of $$('.nav-item')) {
     button.addEventListener('click', () => setView({ kind: button.dataset.view, id: null }));
   }
+
+  // Favourites are a view rather than a list the user built, so they had no
+  // menu of their own until there was something worth putting in one.
+  $('[data-view="favorites"]').addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    const trackIds = [...state.store.favorites];
+    showContextMenu(event.clientX, event.clientY, [
+      { header: 'Ulubione' },
+      { label: 'Odtwórz ulubione', action: () => playback.playList(trackIds) },
+      {
+        label: 'Eksportuj na urządzenie…',
+        action: () => exportDialog.open({
+          trackIds,
+          folderName: 'Ulubione',
+          sourceLabel: 'Ulubione',
+        }),
+      },
+    ]);
+  });
 
   $('#btn-new-playlist').addEventListener('click', async () => {
     const playlist = await createPlaylist('Nowa playlista');

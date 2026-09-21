@@ -25,6 +25,10 @@ korektorem graficznym stylizowanym na wieżę hi-fi z lat 90.
 - **Korektor** — dziesięć suwaków od 31 Hz do 16 kHz, wzmocnienie wstępne,
   dziesięć presetów i przełącznik obejścia. Do tego analizator widma
   z opadającymi znacznikami szczytu oraz wskaźniki wysterowania dla obu kanałów.
+- **Eksport na urządzenie** — skopiuj playlistę, ulubione albo zaznaczone
+  utwory na pendrive, kartę SD czy odtwarzacz MP3. Pliki dostają numery
+  zachowujące kolejność listy, a ponowny eksport dokopiowuje tylko to,
+  czego tam jeszcze nie ma.
 - Obsługiwane formaty: MP3, M4A, AAC, FLAC, OGG, Opus, WAV, WMA.
 
 Biblioteka, playlisty, ulubione i ustawienia korektora zapisują się

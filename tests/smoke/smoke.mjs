@@ -14,7 +14,7 @@
 import { _electron as electron } from 'playwright-core';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { mkdtempSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import os from 'node:os';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -247,6 +247,81 @@ check('track lands on the playlist', Number(playlistCount) >= 1, playlistCount);
 await page.locator('#playlist-list li').first().click();
 await sleep(400);
 await page.screenshot({ path: path.join(shotDir, '04-playlista.png') });
+
+/* ---------------------------------------------------------- 6. export */
+
+/**
+ * Copying a playlist onto a "device" - here a temporary folder. The folder
+ * picker is a native dialog Playwright cannot click, so it is stubbed in the
+ * main process; everything after it is the real thing: real IPC, real files.
+ */
+const exportDir = mkdtempSync(path.join(os.tmpdir(), 'smp-pendrive-'));
+
+await app.evaluate(async ({ dialog }, target) => {
+  dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [target] });
+}, exportDir);
+
+await page.locator('#playlist-list li').first().click({ button: 'right' });
+await page.waitForSelector('.context-menu');
+await page.locator('.context-menu button', { hasText: 'Eksportuj' }).first().click();
+
+await page.waitForSelector('#export-modal:not([hidden])', { timeout: 10000 });
+await sleep(400);
+
+const preview = await page.evaluate(() => ({
+  target: document.querySelector('#export-target').textContent,
+  size: document.querySelector('#export-size').textContent,
+  free: document.querySelector('#export-free').textContent,
+  sample: [...document.querySelectorAll('#export-sample li')].map((li) => li.textContent),
+  startEnabled: !document.querySelector('#btn-export-start').disabled,
+}));
+
+check('export preview names the target folder', preview.target.includes('Nowa playlista'), preview.target);
+check('export preview sizes the job', /\d/.test(preview.size), preview.size);
+check('export preview reports free space', /\d/.test(preview.free), preview.free);
+check('export preview numbers the files', /^01 - /.test(preview.sample[0] ?? ''), preview.sample[0] ?? '');
+check('export can start when there is room', preview.startEnabled);
+
+await page.screenshot({ path: path.join(shotDir, '06-eksport.png') });
+
+await page.locator('#btn-export-start').click();
+await page.waitForSelector('#export-step-summary:not([hidden])', { timeout: 20000 });
+await sleep(300);
+
+const written = readdirSync(path.join(exportDir, 'Nowa playlista'));
+check('files land on the device', written.length >= 1, written.join(', '));
+check('copied file keeps its playlist position', /^01 - .+\.mp3$/.test(written[0] ?? ''), written[0] ?? '');
+check('nothing is left half-written', written.every((name) => !name.endsWith('.part')),
+  written.join(', '));
+check('copied file is not empty',
+  statSync(path.join(exportDir, 'Nowa playlista', written[0])).size > 0);
+
+const firstSummary = await page.locator('#export-tally').textContent();
+check('summary reports what was copied', firstSummary.includes('Skopiowano'), firstSummary.trim());
+
+await page.screenshot({ path: path.join(shotDir, '07-eksport-podsumowanie.png') });
+await page.locator('#btn-export-done').click();
+await sleep(300);
+
+// Second run onto the same folder: everything is already there.
+await page.locator('#playlist-list li').first().click({ button: 'right' });
+await page.waitForSelector('.context-menu');
+await page.locator('.context-menu button', { hasText: 'Eksportuj' }).first().click();
+await page.waitForSelector('#export-modal:not([hidden])', { timeout: 10000 });
+await page.locator('#btn-export-start').click();
+await page.waitForSelector('#export-step-summary:not([hidden])', { timeout: 20000 });
+await sleep(300);
+
+const secondSummary = await page.locator('#export-tally').textContent();
+check('a repeated export skips what is already there',
+  secondSummary.includes('Pominięto'), secondSummary.trim());
+
+const writtenAgain = readdirSync(path.join(exportDir, 'Nowa playlista'));
+check('a repeated export adds no duplicates', writtenAgain.length === written.length,
+  `${written.length} -> ${writtenAgain.length}`);
+
+await page.locator('#btn-export-done').click();
+await sleep(200);
 
 /* ------------------------------------------------------- 6. persistence */
 
