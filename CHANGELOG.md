@@ -9,6 +9,10 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 
 ## [Nieopublikowane]
 
+Nic jeszcze nie czeka na wydanie.
+
+## [1.2.0] - 2026-09-23
+
 ### Dodane
 
 - **Eksport na pendrive i odtwarzacze MP3.** Playlistę, ulubione albo
