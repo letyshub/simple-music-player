@@ -22,7 +22,7 @@
     "music-metadata": "^11.12.3"
   },
   "devDependencies": {
-    "electron": "^39.8.10",
+    "electron": "^44.4.5",
     "electron-builder": "^26.15.3",
     "playwright-core": "^1.63.0",
     "png-to-ico": "^3.0.2",
