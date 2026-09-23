@@ -27,6 +27,32 @@ export function trackCount(n) {
   return `${n} ${plural(n, 'utwór', 'utwory', 'utworów')}`;
 }
 
+export function fileCount(n) {
+  return `${n} ${plural(n, 'plik', 'pliki', 'plików')}`;
+}
+
+const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+/**
+ * A file size the way a person reads it: "48 MB", "1,8 GB".
+ * One decimal only while the number is small enough for it to mean something.
+ */
+export function formatBytes(bytes) {
+  const value = Number(bytes);
+  if (!Number.isFinite(value) || value <= 0) return '0 B';
+
+  let size = value;
+  let unit = 0;
+  while (size >= 1024 && unit < BYTE_UNITS.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+
+  const decimals = unit > 0 && size < 10 ? 1 : 0;
+  const text = size.toFixed(decimals).replace('.', ',').replace(/,0$/, '');
+  return `${text} ${BYTE_UNITS[unit]}`;
+}
+
 /** Total running time of a list, e.g. "1 godz. 12 min". */
 export function formatTotalDuration(seconds) {
   const total = Math.round(seconds);

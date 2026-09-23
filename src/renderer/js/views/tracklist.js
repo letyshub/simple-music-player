@@ -10,7 +10,7 @@ import { showContextMenu } from './context-menu.js';
 
 export const TRACK_DRAG_TYPE = 'application/x-smp-tracks';
 
-export function createTrackList({ playback }) {
+export function createTrackList({ playback, exportDialog }) {
   const container = $('#track-list');
   const emptyState = $('#empty-state');
   const titleNode = $('#view-title');
@@ -100,6 +100,15 @@ export function createTrackList({ playback }) {
       'separator',
       { header: 'Dodaj do playlisty' },
       ...playlistMenuItems(targets),
+      'separator',
+      {
+        label: 'Eksportuj na urządzenie…',
+        action: () => exportDialog.open({
+          trackIds: targets,
+          folderName: 'Wybrane utwory',
+          sourceLabel: targets.length > 1 ? 'Wybrane utwory' : track.title,
+        }),
+      },
       'separator',
     ];
 

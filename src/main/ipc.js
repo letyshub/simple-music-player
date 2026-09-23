@@ -4,6 +4,7 @@ import { stat } from 'node:fs/promises';
 import { AUDIO_EXTENSIONS } from '../shared/audio-files.js';
 import { normalizeStore } from '../shared/store-schema.js';
 import { scanFolder, scanFiles } from './library.js';
+import { planExport, runExport } from './export.js';
 import { getStore, updateStore, flushStore } from './store.js';
 
 /**
@@ -192,5 +193,71 @@ export function registerIpcHandlers() {
 
   ipcMain.handle('shell:reveal', (_event, filePath) => {
     shell.showItemInFolder(filePath);
+  });
+
+  /* ------------------------------------------------------------- export */
+
+  /**
+   * Copying onto a device is planned and run from the same three inputs, so
+   * the renderer never has to hold - or hand back - a list of hundreds of
+   * file names. Planning is cheap enough to repeat, and repeating it means
+   * the copy works from what the disk looks like now rather than from what
+   * it looked like when the window drew the dialog.
+   */
+  function tracksToExport(trackIds) {
+    const { tracks } = getStore();
+    return (trackIds ?? []).map((id) => tracks[id]).filter(Boolean);
+  }
+
+  ipcMain.handle('export:plan', async (event, { trackIds, folderName, targetRoot }) => {
+    let root = targetRoot;
+    if (!root) {
+      const result = await dialog.showOpenDialog(windowFor(event), {
+        title: 'Wybierz urzadzenie lub folder docelowy',
+        properties: ['openDirectory', 'createDirectory'],
+        buttonLabel: 'Wybierz',
+      });
+      if (result.canceled || !result.filePaths.length) return null;
+      root = result.filePaths[0];
+    }
+
+    const plan = await planExport({ tracks: tracksToExport(trackIds), targetRoot: root, folderName });
+    return {
+      targetRoot: root,
+      targetDir: plan.targetDir,
+      count: plan.items.length,
+      totalBytes: plan.totalBytes,
+      freeBytes: plan.freeBytes,
+      missing: plan.missing,
+      // Enough of the naming for the dialog to show what it will look like.
+      sampleNames: plan.items.slice(0, 3).map((item) => item.name),
+    };
+  });
+
+  let exportAbort = null;
+
+  ipcMain.handle('export:run', async (event, { trackIds, folderName, targetRoot }) => {
+    const plan = await planExport({
+      tracks: tracksToExport(trackIds),
+      targetRoot,
+      folderName,
+    });
+
+    exportAbort = new AbortController();
+    try {
+      const result = await runExport(plan, {
+        signal: exportAbort.signal,
+        onProgress: (progress) => {
+          if (!event.sender.isDestroyed()) event.sender.send('export:progress', progress);
+        },
+      });
+      return { ...result, targetDir: plan.targetDir };
+    } finally {
+      exportAbort = null;
+    }
+  });
+
+  ipcMain.handle('export:cancel', () => {
+    exportAbort?.abort();
   });
 }
