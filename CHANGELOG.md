@@ -20,6 +20,16 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
   ponownym eksporcie kopiowane są tylko brakujące pliki. Nic na urządzeniu
   nie jest usuwane.
 
+### Bezpieczeństwo
+
+- **Nowszy silnik aplikacji.** Program działa teraz na Electronie 44
+  (Chromium 152) zamiast 39, więc dostaje wszystkie poprawki
+  bezpieczeństwa przeglądarki wydane od tamtej wersji. Przy okazji
+  z zależności projektu znika biblioteka `extract-zip`, która przy
+  rozpakowywaniu archiwum nie sprawdzała, dokąd prowadzą dowiązania
+  symboliczne (CVE-2026-56876, GHSA-7pqw-9j4j-h8q3). Nigdy nie doczekała
+  się poprawki, więc jedynym wyjściem było pozbycie się jej z drzewa.
+
 ## [1.1.1] - 2026-09-14
 
 Pierwsze publiczne wydanie.
