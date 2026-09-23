@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, mkdir, writeFile, readFile, readdir, rm } from 'node:fs/promises';
+import { rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { planExport, runExport } from '../src/main/export.js';
@@ -180,10 +181,12 @@ describe('runExport', () => {
     let first = true;
 
     const result = await runExport(prepared, {
-      onProgress: async () => {
+      // Synchronous on purpose: runExport does not await the progress
+      // callback, so an async removal would race the next copy.
+      onProgress: () => {
         if (!first) return;
         first = false;
-        await rm(prepared.targetDir, { recursive: true, force: true });
+        rmSync(prepared.targetDir, { recursive: true, force: true });
       },
     });
 
