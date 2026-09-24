@@ -49,10 +49,9 @@ Na zrzutach widać wygenerowane pliki demonstracyjne, nie prawdziwe nagrania.
 
 ## Pobieranie
 
-Gotowe pliki są na [stronie wydań](https://github.com/letyshub/simple-music-player/releases/latest):
-
-- **instalator** — zwykła instalacja ze skrótem w menu Start,
-- **wersja przenośna** — jeden plik, działa bez instalacji, choćby z pendrive'a.
+Gotowy plik jest na [stronie wydań](https://github.com/letyshub/simple-music-player/releases/latest).
+To wersja przenośna — jeden plik `.exe`, który działa bez instalacji, choćby
+z pendrive'a.
 
 Pliki nie są podpisane cyfrowo, więc przy pierwszym uruchomieniu Windows
 SmartScreen pokaże ostrzeżenie „Nie chroniono komputera". To normalne dla
@@ -75,10 +74,10 @@ npm start
 npm run dist
 ```
 
-Powstaną dwa pliki w katalogu `dist/`: instalator NSIS oraz wersja
-przenośna, która działa bez instalacji.
+W katalogu `dist/` powstanie wersja przenośna — jeden plik `.exe`, który
+działa bez instalacji.
 
-Sam katalog aplikacji, bez pakowania do instalatora:
+Sam katalog aplikacji, bez pakowania do jednego pliku:
 
 ```bash
 npm run pack
@@ -113,7 +112,7 @@ dopiero w pipelinie, tag wskazywałby już commit bez opisu i trzeba by go
 kasować ze zdalnego repozytorium.
 
 Tag zaczynający się od `v` uruchamia budowanie na Windows: testy jednostkowe,
-instalator i wersja przenośna, a na końcu **szkic** wydania z podpiętymi
+wersja przenośna, a na końcu **szkic** wydania z podpiętymi
 plikami, a opisem wydania staje się sekcja z dziennika zmian. Szkic, a nie od
 razu opublikowane wydanie — pobierz pliki, sprawdź, czy program się uruchamia,
 i dopiero wtedy kliknij „Publish release".
@@ -121,7 +120,7 @@ i dopiero wtedy kliknij „Publish release".
 Pipeline powtarza obie kontrole u siebie, bo tag może powstać także z ręki:
 przerwie pracę, gdy nie zgadza się z wersją w `package.json` albo gdy dla
 wydawanej wersji nie ma opisu w dzienniku. Pierwsze chroni przed wydaniem
-`v1.2.0` z plikami nazwanymi `1.1.0`, drugie przed instalatorem, którego
+`v1.2.0` z plikami nazwanymi `1.1.0`, drugie przed plikiem, którego
 strona wydania nie mówi ani słowa o zmianach.
 
 ## Skróty klawiszowe
@@ -175,7 +174,7 @@ src/
   shared/     logika bez zależności od Electrona, pokryta testami
 tests/        testy jednostkowe i dymne
 tools/        skrypty pomocnicze: zrzuty ekranu i ikona aplikacji
-build/        wygenerowana ikona dla instalatora
+build/        wygenerowana ikona aplikacji
 ```
 
 Okno nie ma dostępu do systemu plików. Zarówno interfejs, jak i pliki audio
