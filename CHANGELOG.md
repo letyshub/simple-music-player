@@ -9,6 +9,10 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 
 ## [Nieopublikowane]
 
+Nic jeszcze nie czeka na wydanie.
+
+## [1.3.0] - 2026-10-05
+
 ### Dodane
 
 - **Zaznaczanie wielu utworów.** Każdy utwór ma pole wyboru, więc kilka
@@ -25,6 +29,11 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 - „Dodaj do ulubionych" na kilku utworach dodaje wszystkie. Wcześniej
   przełączało każdy z osobna, więc utwory, które już były w ulubionych,
   z nich wypadały.
+- **Tylko wersja przenośna.** Wydanie nie zawiera już instalatora, jest
+  jeden plik `.exe`, który działa bez instalacji. Jeśli masz zainstalowaną
+  wersję 1.2.0, możesz ją odinstalować i uruchamiać nowy plik: biblioteka,
+  playlisty, ulubione i ustawienia korektora zostają na miejscu, bo obie
+  wersje trzymają je w tym samym folderze.
 
 ## [1.2.0] - 2026-09-23
 
