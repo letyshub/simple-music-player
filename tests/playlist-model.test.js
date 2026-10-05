@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   createPlaylist, addTracks, removeTrack, moveTrack, renamePlaylist,
-  toggleFavorite, isFavorite, uniqueName,
+  toggleFavorite, isFavorite, uniqueName, addFavorites, removeFavorites, allFavorite,
 } from '../src/shared/playlist-model.js';
 
 describe('createPlaylist', () => {
@@ -103,5 +103,37 @@ describe('uniqueName', () => {
   it('appends a counter when the name is taken', () => {
     expect(uniqueName(['Nowa playlista'], 'Nowa playlista')).toBe('Nowa playlista 2');
     expect(uniqueName(['Mix', 'Mix 2'], 'Mix')).toBe('Mix 3');
+  });
+});
+
+describe('addFavorites', () => {
+  it('appends only the tracks that are not favourites yet', () => {
+    expect(addFavorites(['a'], ['b', 'a', 'c', 'b'])).toEqual(['a', 'b', 'c']);
+  });
+
+  it('never removes anything, unlike toggling one by one', () => {
+    const mixed = ['a', 'b'];
+    expect(addFavorites(mixed, ['b', 'c'])).toEqual(['a', 'b', 'c']);
+  });
+
+  it('copes with a missing list', () => {
+    expect(addFavorites(undefined, ['a'])).toEqual(['a']);
+  });
+});
+
+describe('removeFavorites', () => {
+  it('drops the given tracks and keeps the rest in order', () => {
+    expect(removeFavorites(['a', 'b', 'c'], ['c', 'a'])).toEqual(['b']);
+  });
+});
+
+describe('allFavorite', () => {
+  it('is true only when every track is marked', () => {
+    expect(allFavorite(['a', 'b'], ['a', 'b'])).toBe(true);
+    expect(allFavorite(['a'], ['a', 'b'])).toBe(false);
+  });
+
+  it('is false for an empty selection', () => {
+    expect(allFavorite(['a'], [])).toBe(false);
   });
 });

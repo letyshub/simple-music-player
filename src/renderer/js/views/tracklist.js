@@ -1,9 +1,11 @@
 import { $, el, toast } from '../util/dom.js';
 import { formatTime, trackCount, formatTotalDuration } from '../util/format.js';
 import {
-  state, on, tracksForView, isFavorite, toggleFavorite,
+  state, on, tracksForView, isFavorite, toggleFavorite, setFavorites, createPlaylist,
   addToPlaylist, removeFromPlaylist, reorderPlaylist, playlistById, setStore,
 } from '../state.js';
+import { allFavorite } from '../../../shared/playlist-model.js';
+import { rangeIds, selectionCoverage } from '../../../shared/selection.js';
 import { showContextMenu } from './context-menu.js';
 
 /** The main list of tracks, and everything you can do to a row. */
@@ -15,6 +17,10 @@ export function createTrackList({ playback, exportDialog }) {
   const emptyState = $('#empty-state');
   const titleNode = $('#view-title');
   const metaNode = $('#view-meta');
+  const checkAll = $('#check-all');
+  const selectionBar = $('#selection-bar');
+  const selectionCount = $('#selection-count');
+  const selectionFav = $('#btn-selection-fav');
 
   /** The rows currently on screen, so playback highlighting can skip a rebuild. */
   let rendered = [];
@@ -40,35 +46,78 @@ export function createTrackList({ playback, exportDialog }) {
       : [track.id];
   }
 
-  function applySelectionClasses() {
+  const renderedIds = () => rendered.map((t) => t.id);
+
+  /** Paint the selection everywhere it shows: rows, their boxes, the header
+   *  box, and the bar that appears once more than one track is picked. */
+  function syncSelection() {
     for (const row of container.children) {
-      row.classList.toggle('is-selected', state.selection.has(row.dataset.id));
+      const selected = state.selection.has(row.dataset.id);
+      row.classList.toggle('is-selected', selected);
+      const box = row.querySelector('.t-check');
+      if (box) box.checked = selected;
     }
+
+    const coverage = selectionCoverage(renderedIds(), state.selection);
+    checkAll.checked = coverage === 'all';
+    checkAll.indeterminate = coverage === 'some';
+    checkAll.disabled = rendered.length === 0;
+
+    const ids = selectedIds();
+    selectionBar.hidden = ids.length < 2;
+    if (ids.length >= 2) {
+      selectionCount.textContent = `Zaznaczono ${trackCount(ids.length)}`;
+      selectionFav.textContent = allFavorite(state.store.favorites, ids)
+        ? '♡ Usuń z ulubionych'
+        : '♥ Do ulubionych';
+    }
+  }
+
+  function toggleOne(id) {
+    if (state.selection.has(id)) state.selection.delete(id);
+    else state.selection.add(id);
+  }
+
+  function selectAll() {
+    for (const id of renderedIds()) state.selection.add(id);
+    syncSelection();
+  }
+
+  function clearSelection() {
+    state.selection.clear();
+    syncSelection();
   }
 
   function handleRowClick(event, track, index) {
     if (event.shiftKey && rendered.length) {
-      const [from, to] = [lastAnchorIndex, index].sort((a, b) => a - b);
       state.selection.clear();
-      for (let i = from; i <= to; i += 1) state.selection.add(rendered[i].id);
+      for (const id of rangeIds(renderedIds(), lastAnchorIndex, index)) state.selection.add(id);
     } else if (event.ctrlKey || event.metaKey) {
-      if (state.selection.has(track.id)) state.selection.delete(track.id);
-      else state.selection.add(track.id);
+      toggleOne(track.id);
       lastAnchorIndex = index;
     } else {
       state.selection.clear();
       state.selection.add(track.id);
       lastAnchorIndex = index;
     }
-    applySelectionClasses();
+    syncSelection();
+  }
+
+  /** The box always adds to what is already picked, so several tracks can be
+   *  collected with the mouse alone. Shift extends from the last box ticked. */
+  function handleCheckClick(event, track, index) {
+    event.stopPropagation();
+    if (event.shiftKey && rendered.length) {
+      for (const id of rangeIds(renderedIds(), lastAnchorIndex, index)) state.selection.add(id);
+    } else {
+      toggleOne(track.id);
+      lastAnchorIndex = index;
+    }
+    syncSelection();
   }
 
   function playlistMenuItems(trackIds) {
-    const playlists = state.store.playlists;
-    if (!playlists.length) {
-      return [{ label: 'Brak playlist — utwórz najpierw', action: () => {} }];
-    }
-    return playlists.map((p) => ({
+    const existing = state.store.playlists.map((p) => ({
       label: p.name,
       action: async () => {
         const added = await addToPlaylist(p.id, trackIds);
@@ -77,6 +126,34 @@ export function createTrackList({ playback, exportDialog }) {
           : `Wszystko już jest na „${p.name}”`);
       },
     }));
+    return [
+      ...existing,
+      {
+        label: trackIds.length > 1 ? '+ Nowa z zaznaczonych' : '+ Nowa z tym utworem',
+        action: async () => {
+          const playlist = await createPlaylist('Nowa playlista', trackIds);
+          toast(`Utworzono „${playlist.name}” · ${trackCount(playlist.trackIds.length)}`);
+        },
+      },
+    ];
+  }
+
+  /** On several tracks the item acts on all of them the same way: a mixed
+   *  selection is added, never half-added and half-removed. */
+  function favouriteMenuItem(trackIds) {
+    const all = allFavorite(state.store.favorites, trackIds);
+    return {
+      label: all ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
+      action: () => setFavorites(trackIds, !all),
+    };
+  }
+
+  function openExport(trackIds, singleTitle = 'Wybrane utwory') {
+    exportDialog.open({
+      trackIds,
+      folderName: 'Wybrane utwory',
+      sourceLabel: trackIds.length > 1 ? 'Wybrane utwory' : singleTitle,
+    });
   }
 
   function openRowMenu(event, track) {
@@ -84,7 +161,7 @@ export function createTrackList({ playback, exportDialog }) {
     if (!state.selection.has(track.id)) {
       state.selection.clear();
       state.selection.add(track.id);
-      applySelectionClasses();
+      syncSelection();
     }
 
     const targets = targetsFor(track);
@@ -93,22 +170,12 @@ export function createTrackList({ playback, exportDialog }) {
     const items = [
       { header: label },
       { label: 'Odtwórz teraz', action: () => playback.playList(rendered.map((t) => t.id), track.id) },
-      {
-        label: isFavorite(track.id) ? 'Usuń z ulubionych' : 'Dodaj do ulubionych',
-        action: () => targets.forEach((id) => toggleFavorite(id)),
-      },
+      favouriteMenuItem(targets),
       'separator',
       { header: 'Dodaj do playlisty' },
       ...playlistMenuItems(targets),
       'separator',
-      {
-        label: 'Eksportuj na urządzenie…',
-        action: () => exportDialog.open({
-          trackIds: targets,
-          folderName: 'Wybrane utwory',
-          sourceLabel: targets.length > 1 ? 'Wybrane utwory' : track.title,
-        }),
-      },
+      { label: 'Eksportuj na urządzenie…', action: () => openExport(targets, track.title) },
       'separator',
     ];
 
@@ -156,6 +223,14 @@ export function createTrackList({ playback, exportDialog }) {
       onClick: (event) => { event.stopPropagation(); openRowMenu(event, track); },
     });
 
+    const checkBox = el('input', {
+      class: 't-check',
+      type: 'checkbox',
+      'aria-label': `Zaznacz: ${track.title}`,
+      onClick: (event) => handleCheckClick(event, track, index),
+      onDblclick: (event) => event.stopPropagation(),
+    });
+
     const row = el('div', {
       class: 'track-row',
       draggable: 'true',
@@ -164,6 +239,7 @@ export function createTrackList({ playback, exportDialog }) {
       onDblclick: () => playback.playList(rendered.map((t) => t.id), track.id),
       onContextmenu: (event) => openRowMenu(event, track),
     }, [
+      checkBox,
       favButton,
       el('span', { class: 't-num', text: String(index + 1) }),
       el('span', { class: 't-title', text: track.title, title: track.title }),
@@ -265,8 +341,31 @@ export function createTrackList({ playback, exportDialog }) {
 
     enablePlaylistReorder();
     highlightPlaying();
-    applySelectionClasses();
+    syncSelection();
   }
+
+  /* ---------------------------------------------------- selection bar */
+
+  checkAll.addEventListener('click', () => {
+    if (selectionCoverage(renderedIds(), state.selection) === 'all') clearSelection();
+    else selectAll();
+  });
+
+  $('#btn-selection-playlist').addEventListener('click', (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    showContextMenu(rect.left, rect.bottom + 4, [
+      { header: 'Dodaj do playlisty' },
+      ...playlistMenuItems(selectedIds()),
+    ]);
+  });
+
+  selectionFav.addEventListener('click', () => {
+    const ids = selectedIds();
+    setFavorites(ids, !allFavorite(state.store.favorites, ids));
+  });
+
+  $('#btn-selection-export').addEventListener('click', () => openExport(selectedIds()));
+  $('#btn-selection-clear').addEventListener('click', clearSelection);
 
   on('library', render);
   on('view', render);
@@ -278,5 +377,7 @@ export function createTrackList({ playback, exportDialog }) {
     /** Ids in the order shown, for "play everything in this view". */
     visibleIds: () => rendered.map((t) => t.id),
     selectedIds,
+    selectAll,
+    clearSelection,
   };
 }

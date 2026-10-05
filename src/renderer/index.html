@@ -69,6 +69,10 @@
       </header>
 
       <div class="track-head">
+        <span class="col-check">
+          <input id="check-all" class="t-check" type="checkbox"
+                 aria-label="Zaznacz wszystkie" title="Zaznacz wszystkie (Ctrl+A)">
+        </span>
         <span class="col-fav"></span>
         <span class="col-num">#</span>
         <span class="col-title">Tytuł</span>
@@ -79,6 +83,18 @@
       </div>
 
       <div id="track-list" class="track-list" tabindex="0"></div>
+
+      <!-- Below the list rather than above it, so ticking the second box
+           does not shove the rows down under the pointer. -->
+      <div id="selection-bar" class="selection-bar" hidden>
+        <span id="selection-count" class="selection-count"></span>
+        <div class="selection-actions">
+          <button id="btn-selection-playlist" class="primary" type="button">+ Do playlisty ▾</button>
+          <button id="btn-selection-fav" class="ghost" type="button">♥ Do ulubionych</button>
+          <button id="btn-selection-export" class="ghost" type="button">Eksportuj…</button>
+          <button id="btn-selection-clear" class="ghost" type="button" title="Odznacz wszystko (Esc)">× Odznacz</button>
+        </div>
+      </div>
 
       <div id="empty-state" class="empty" hidden>
         <p class="empty-title">Nic tu jeszcze nie ma</p>

@@ -2,6 +2,7 @@ import { compareByPath } from '../../shared/audio-files.js';
 import {
   createPlaylist as makePlaylist, addTracks, removeTrack, moveTrack,
   renamePlaylist as rename, toggleFavorite as toggleFav, uniqueName,
+  addFavorites, removeFavorites,
 } from '../../shared/playlist-model.js';
 
 /**
@@ -137,14 +138,25 @@ export async function toggleFavorite(id) {
   state.store.favorites = await window.api.saveFavorites(state.store.favorites);
 }
 
+/** Mark or unmark several tracks in one save, so a mixed selection ends up
+ *  all one way instead of each track flipping on its own. */
+export async function setFavorites(ids, favourite) {
+  state.store.favorites = favourite
+    ? addFavorites(state.store.favorites, ids)
+    : removeFavorites(state.store.favorites, ids);
+  emit('favorites');
+  emit('library');
+  state.store.favorites = await window.api.saveFavorites(state.store.favorites);
+}
+
 async function persistPlaylists() {
   emit('library');
   state.store.playlists = await window.api.savePlaylists(state.store.playlists);
 }
 
-export async function createPlaylist(name) {
+export async function createPlaylist(name, trackIds = []) {
   const finalName = uniqueName(state.store.playlists.map((p) => p.name), name);
-  const playlist = makePlaylist(finalName);
+  const playlist = addTracks(makePlaylist(finalName), trackIds);
   state.store.playlists = [...state.store.playlists, playlist];
   await persistPlaylists();
   return playlist;

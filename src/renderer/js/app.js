@@ -111,9 +111,13 @@ function bindDropTarget(onPaths) {
   });
 }
 
-function bindShortcuts({ playback }) {
+function bindShortcuts({ playback, trackList }) {
   document.addEventListener('keydown', (event) => {
-    const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName);
+    // A ticked row box keeps focus after the click, but it is not somewhere
+    // the user types, so the shortcuts must keep working from it.
+    const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName)
+      && event.target.type !== 'checkbox';
+    const modalOpen = Boolean(document.querySelector('.modal:not([hidden])'));
 
     if (event.key === ' ' && !inField) {
       event.preventDefault();
@@ -125,6 +129,14 @@ function bindShortcuts({ playback }) {
     if (event.ctrlKey && event.key === 'ArrowLeft') { event.preventDefault(); playback.prev(); }
     if (event.ctrlKey && event.key.toLowerCase() === 'f') { event.preventDefault(); $('#search').focus(); }
     if (event.ctrlKey && event.key.toLowerCase() === 'e') { event.preventDefault(); $('#btn-eq-toggle').click(); }
+
+    if (event.ctrlKey && event.key.toLowerCase() === 'a' && !inField && !modalOpen) {
+      event.preventDefault();
+      trackList.selectAll();
+    }
+    if (event.key === 'Escape' && !event.defaultPrevented && !inField && !modalOpen) {
+      trackList.clearSelection();
+    }
 
     if (event.key === 'Delete' && !inField && state.view.kind === 'playlist') {
       event.preventDefault();
@@ -202,7 +214,7 @@ async function main() {
   });
 
   bindDropTarget((paths) => runImport(() => window.api.addPaths(paths)));
-  bindShortcuts({ playback });
+  bindShortcuts({ playback, trackList });
 
   window.api.onProgress(({ done, total }) => {
     showScanStatus(total ? `SKANOWANIE ${done}/${total}` : 'SKANOWANIE…');

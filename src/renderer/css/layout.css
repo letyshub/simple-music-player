@@ -180,7 +180,7 @@
 
 .track-head, .track-row {
   display: grid;
-  grid-template-columns: 30px 42px minmax(180px, 2.2fr) minmax(120px, 1.4fr) minmax(100px, 1.2fr) 58px 30px;
+  grid-template-columns: 16px 30px 42px minmax(180px, 2.2fr) minmax(120px, 1.4fr) minmax(100px, 1.2fr) 58px 30px;
   align-items: center;
   gap: 10px;
   padding: 0 18px;
@@ -257,6 +257,45 @@
 }
 .track-row:hover .t-menu { visibility: visible; }
 .t-menu:hover { color: var(--text); }
+
+/* Ticked boxes stay lit; the rest only show up on hover, so a long list
+   does not turn into a column of empty squares. */
+.t-check {
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--led-green);
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 120ms;
+}
+.track-row:hover .t-check,
+.track-head:hover .t-check,
+.t-check:checked,
+.t-check:indeterminate,
+.t-check:focus-visible { opacity: 1; }
+.t-check:disabled { opacity: 0.15; cursor: default; }
+
+.selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 12px 10px;
+  padding: 6px 8px 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  box-shadow: inset 2px 0 0 var(--led-green);
+}
+.selection-count { font: 12px/1 var(--mono); color: var(--led-green); white-space: nowrap; }
+.selection-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 
 /* ---------- Empty state ---------- */
 

@@ -244,6 +244,70 @@ await sleep(700);
 const playlistCount = await page.locator('#playlist-list .item-count').first().textContent();
 check('track lands on the playlist', Number(playlistCount) >= 1, playlistCount);
 
+/* ------------------------------------------------- 5b. several at once */
+
+const readSelection = () => page.evaluate(() => ({
+  ticked: document.querySelectorAll('.track-row .t-check:checked').length,
+  barShown: !document.querySelector('#selection-bar').hidden,
+  count: document.querySelector('#selection-count').textContent,
+}));
+
+// Ticking boxes collects tracks without any modifier key. The right-click
+// above left the first row selected, so start from a clean slate.
+await page.locator('#btn-selection-clear').evaluate((button) => button.click());
+await page.locator('.track-row').nth(0).locator('.t-check').click();
+await page.locator('.track-row').nth(1).locator('.t-check').click();
+let picked = await readSelection();
+check('ticking two boxes selects both', picked.ticked === 2, `${picked.ticked} zaznaczonych`);
+check('selection bar appears for two tracks', picked.barShown, picked.count);
+
+// Space from a focused box still means play/pause, not "untick".
+await page.keyboard.press('Space');
+await page.keyboard.press('Space');
+picked = await readSelection();
+check('space on a ticked box leaves the selection alone', picked.ticked === 2, `${picked.ticked}`);
+
+await page.keyboard.press('Escape');
+picked = await readSelection();
+check('escape clears the selection', picked.ticked === 0 && !picked.barShown, `${picked.ticked}`);
+
+await page.locator('#track-list').focus();
+await page.keyboard.press('Control+a');
+picked = await readSelection();
+check('ctrl+a selects every visible track', picked.ticked === rowCount, `${picked.ticked}/${rowCount}`);
+
+await page.locator('#btn-selection-playlist').click();
+await page.waitForSelector('.context-menu');
+await page.locator('.context-menu button', { hasText: 'Nowa z zaznaczonych' }).click();
+await sleep(700);
+
+const seeded = await page.evaluate(async () => {
+  const store = await window.api.loadStore();
+  return store.playlists.map((p) => ({ name: p.name, size: p.trackIds.length }));
+});
+check('a new playlist can be made from the selection',
+  seeded.length === 2 && seeded[1].size === rowCount,
+  seeded.map((p) => `${p.name}: ${p.size}`).join(', '));
+
+await page.screenshot({ path: path.join(shotDir, '04a-zaznaczenie.png') });
+
+// One track is a favourite already: the bulk action must add the rest, not flip it off.
+await page.locator('#btn-selection-fav').click();
+await sleep(500);
+const allFav = await page.locator('[data-count="favorites"]').textContent();
+check('adding a mixed selection to favourites adds all of them',
+  Number(allFav) === rowCount, `${allFav}/${rowCount}`);
+
+await page.locator('#btn-selection-fav').click();
+await sleep(500);
+const noFav = await page.locator('[data-count="favorites"]').textContent();
+check('a fully favourite selection can be unmarked at once', Number(noFav) === 0, noFav);
+
+// Back to the single favourite the persistence checks below expect.
+await page.locator('#btn-selection-clear').click();
+await page.locator('.track-row').first().locator('.t-fav').click();
+await sleep(500);
+
 await page.locator('#playlist-list li').first().click();
 await sleep(400);
 await page.screenshot({ path: path.join(shotDir, '04-playlista.png') });
@@ -345,7 +409,7 @@ const restored = await page2.evaluate(async () => {
 
 check('library survives a restart', restored.tracks >= 3, `${restored.tracks} utworów`);
 check('favourite survives a restart', restored.favorites === 1, String(restored.favorites));
-check('playlist survives a restart', restored.playlists === 1, String(restored.playlists));
+check('playlists survive a restart', restored.playlists === 2, String(restored.playlists));
 check('equaliser curve survives a restart', restored.eqGains.some((g) => g !== 0),
   restored.eqGains.join(','));
 

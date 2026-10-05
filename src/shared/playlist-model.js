@@ -78,3 +78,27 @@ export function uniqueName(existingNames, base) {
   while (taken.has(`${base} ${n}`)) n += 1;
   return `${base} ${n}`;
 }
+
+/** Mark several tracks at once. Ones already marked keep their place. */
+export function addFavorites(favorites, trackIds) {
+  const list = Array.isArray(favorites) ? favorites : [];
+  const taken = new Set(list);
+  const additions = [];
+  for (const id of trackIds ?? []) {
+    if (!id || taken.has(id)) continue;
+    taken.add(id);
+    additions.push(id);
+  }
+  return [...list, ...additions];
+}
+
+export function removeFavorites(favorites, trackIds) {
+  const drop = new Set(trackIds ?? []);
+  return (Array.isArray(favorites) ? favorites : []).filter((id) => !drop.has(id));
+}
+
+/** True only when every one of the tracks is a favourite, and there is at least one. */
+export function allFavorite(favorites, trackIds) {
+  const list = new Set(Array.isArray(favorites) ? favorites : []);
+  return trackIds.length > 0 && trackIds.every((id) => list.has(id));
+}

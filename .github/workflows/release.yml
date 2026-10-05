@@ -1,6 +1,6 @@
 name: wydanie
 
-# Pchnięcie tagu w rodzaju v1.2.0 buduje instalator i wersję przenośną,
+# Pchnięcie tagu w rodzaju v1.2.0 buduje wersję przenośną,
 # a potem podczepia je pod szkic wydania na GitHubie. Szkic, a nie gotowe
 # wydanie, bo zły plik wykonywalny trudniej cofnąć niż zły commit — ktoś
 # powinien go najpierw uruchomić i dopiero wtedy kliknąć „publish".
@@ -58,7 +58,7 @@ jobs:
 
       # Opis wydania powstaje z CHANGELOG.md. Krok kończy się błędem, gdy
       # dla wydawanej wersji nikt nie napisał opisu — lepiej przerwać teraz
-      # niż opublikować instalator z pustą stroną wydania.
+      # niż opublikować plik z pustą stroną wydania.
       - name: Przygotuj opis wydania z CHANGELOG.md
         shell: bash
         run: |
@@ -111,7 +111,5 @@ jobs:
           name: windows-x64
           path: |
             dist/*.exe
-            dist/*.blockmap
-            dist/latest.yml
           if-no-files-found: error
           retention-days: 14
