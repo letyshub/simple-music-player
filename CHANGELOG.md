@@ -9,7 +9,22 @@ numeracja zgodna z [wersjonowaniem semantycznym](https://semver.org/lang/pl/).
 
 ## [Nieopublikowane]
 
-Nic jeszcze nie czeka na wydanie.
+### Dodane
+
+- **Zaznaczanie wielu utworów.** Każdy utwór ma pole wyboru, więc kilka
+  utworów zaznaczysz samą myszą, bez trzymania Ctrl. Pole w nagłówku albo
+  Ctrl + A zaznacza wszystko na liście, Esc odznacza. Gdy zaznaczone są co
+  najmniej dwa utwory, na dole listy pojawia się pasek: dodasz je stamtąd
+  do playlisty, utworzysz z nich nową playlistę, dodasz do ulubionych albo
+  wyeksportujesz na urządzenie.
+
+### Zmienione
+
+- W menu „Dodaj do playlisty" zawsze jest pozycja tworząca nową playlistę
+  z zaznaczonych utworów, także wtedy, gdy nie ma jeszcze żadnej playlisty.
+- „Dodaj do ulubionych" na kilku utworach dodaje wszystkie. Wcześniej
+  przełączało każdy z osobna, więc utwory, które już były w ulubionych,
+  z nich wypadały.
 
 ## [1.2.0] - 2026-09-23
 

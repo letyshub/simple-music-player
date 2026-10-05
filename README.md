@@ -20,6 +20,10 @@ korektorem graficznym stylizowanym na wieżę hi-fi z lat 90.
   albo pojedyncze pliki prosto na okno.
 - **Playlisty** — twórz je, zmieniaj nazwy, przeciągaj utwory z biblioteki
   na playlistę w panelu bocznym i zmieniaj kolejność przeciąganiem.
+- **Zaznaczanie wielu utworów** — zaznacz pola przy utworach (albo wszystkie
+  naraz przez Ctrl + A), a na dole listy pojawi się pasek, z którego dodasz je
+  do playlisty, utworzysz z nich nową, oznaczysz jako ulubione lub
+  wyeksportujesz.
 - **Ulubione** — kliknij serce przy utworze. Wszystkie ulubione zbierają się
   w osobnym widoku.
 - **Korektor** — dziesięć suwaków od 31 Hz do 16 kHz, wzmocnienie wstępne,
@@ -132,6 +136,8 @@ strona wydania nie mówi ani słowa o zmianach.
 | Ctrl + ← | Poprzedni utwór (lub od początku, jeśli minęły 3 sekundy) |
 | Ctrl + F | Przejdź do wyszukiwania |
 | Ctrl + E | Pokaż lub ukryj korektor |
+| Ctrl + A | Zaznacz wszystkie utwory na liście |
+| Esc | Odznacz wszystko |
 | Delete | Usuń zaznaczone utwory z playlisty |
 | F12 | Narzędzia deweloperskie |
 

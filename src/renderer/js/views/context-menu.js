@@ -55,7 +55,10 @@ document.addEventListener('pointerdown', (event) => {
   if (open && !open.contains(event.target)) closeContextMenu();
 });
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') closeContextMenu();
+  if (event.key !== 'Escape' || !open) return;
+  closeContextMenu();
+  // Marked as handled so the same Escape does not also clear the selection.
+  event.preventDefault();
 });
 window.addEventListener('blur', closeContextMenu);
 document.addEventListener('scroll', closeContextMenu, true);
